@@ -1,2 +1,4 @@
 .env
 chinook.db
+__pycache__/
+src/code_assistant/v2_workspace/
