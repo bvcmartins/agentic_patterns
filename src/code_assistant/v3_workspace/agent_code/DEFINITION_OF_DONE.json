@@ -1,0 +1,21 @@
+{
+  "passing_criteria": [
+    {
+      "name": "add_and_top",
+      "check": "(lambda c=BoundedCounter(3): (c.add('a'), c.add('a'), c.add('b'), c.top()))()[-1] == 'a'"
+    },
+    {
+      "name": "keys",
+      "check": "set((lambda c=BoundedCounter(3): (c.add('a'), c.add('b'), c.keys()))()[-1]) == {'a','b'}"
+    },
+    {
+      "name": "evicts",
+      "check": "(lambda c=BoundedCounter(2): (c.add('a'), c.add('b'), c.add('c'), 'a' not in c.keys()))()[-1] is True"
+    },
+    {
+      "name": "capacity",
+      "check": "(lambda c=BoundedCounter(2): (c.add('a'), c.add('b'), c.add('c'), len(c.keys()) <= 2))()[-1] is True"
+    }
+  ],
+  "import_line": "from counter import BoundedCounter"
+}
