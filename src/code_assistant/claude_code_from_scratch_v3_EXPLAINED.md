@@ -27,6 +27,33 @@ branches *are* edges, structured output *is* a Pydantic schema, and parallelism 
 
 ---
 
+## Companion: the interactive code-block graph
+
+This document has a sibling: **[`claude_code_from_scratch_v3_GRAPH.html`](claude_code_from_scratch_v3_GRAPH.html)**
+— open it in any browser (no network needed). It renders the notebook as a graph where **every
+node is one code cell, showing that cell's real code**, and **every edge is a real dependency**:
+an arrow `A → B` means cell `B` *uses* a symbol that cell `A` *defines* (the edge is labelled
+with the symbol names). The edges are computed mechanically from the notebook's AST, so the
+picture is the notebook's actual wiring, not a hand-drawn approximation.
+
+Read the two together: this `.md` is the *prose* (what each function does and why); the `.html`
+is the *map* (how the blocks feed each other). The cell numbers match — every "cell N" reference
+below is node `#N` in the graph. In the graph you can:
+
+- **pan** (drag the background), **zoom** (mouse wheel), and **drag** any cell to rearrange it;
+- **click a cell** to open a side panel with its description, the symbols it *defines*, what it
+  *depends on*, what *uses it*, and its full syntax-highlighted code;
+- **filter** by phase (the coloured chips, top-right) or **search** code/titles (top-left box).
+
+Regenerate it any time with `python3 _build_v3_graph.py` (re-reads the notebook).
+
+> Reading order that works well: skim the graph end-to-end to see the spine
+> (`Phase 0 setup → tools → the tool-loop graph → hardening primitives → the team`), notice how
+> almost everything points back at the `llm()` factory (cell 5) and the tracer (cell 7), then
+> drop into the prose below for any cell whose role isn't obvious from its code.
+
+---
+
 ## Table of contents
 
 - [Phase 0 — Imports, logging, config, the model factory](#phase-0)
@@ -43,7 +70,7 @@ branches *are* edges, structured output *is* a Pydantic schema, and parallelism 
 - [Phase 10 — Offline self-tests](#phase-10)
 - [Phase 11 — A harder end-to-end build](#phase-11)
 - [Cross-cutting design themes](#themes)
-- [Known issue spotted while documenting](#known-issue)
+- [Notes on changes since first draft](#known-issue)
 
 ---
 
@@ -680,23 +707,12 @@ The real lessons, mostly inherited from v2 and re-grounded in the framework:
 ---
 
 <a name="known-issue"></a>
-## Known issue spotted while documenting
+## Notes on changes since first draft
 
-In **cell 7** (`RichTracer.on_llm_end`), the first line of the `try` block is corrupted — a
-stray URL was pasted into the identifier:
-
-```python
-gen = responshttp://airig.local:8503e.generations[0][0]
-```
-
-This is a `SyntaxError`; it should read:
-
-```python
-gen = response.generations[0][0]
-```
-
-Because it lives inside `on_llm_end`, the tracer's per-response panel (thinking/answer/token
-accounting) will fail on every model call as written — though the broad `except Exception`
-right below it swallows the fallout into empty `text/think/tok/tcs`, so runs won't crash, they
-just won't trace responses. It's a one-line fix; I left it untouched since you asked for the
-walkthrough, not a code change. Say the word and I'll correct it.
+An earlier draft of this walkthrough flagged a corrupted line in **cell 7**
+(`RichTracer.on_llm_end`) where a stray URL had been pasted into an identifier
+(`gen = responshttp://…e.generations[0][0]`), which was a `SyntaxError`. **That has since been
+fixed in the notebook** — cell 7 now reads the correct `gen = response.generations[0][0]`, so
+the tracer's per-response panel (thinking / answer / token accounting) works as intended. No
+outstanding correctness issues are known in the current notebook; the 25 offline self-tests in
+Phase 10 (cell 46) are written to pass without the backend and gate the live phases.
