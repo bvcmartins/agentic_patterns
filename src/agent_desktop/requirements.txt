@@ -1,0 +1,10 @@
+# desktop_agent.py — Gemini 3.0 on Google Cloud (Vertex AI by default).
+# Pin/upgrade as needed in your GCS environment.
+langgraph>=0.2.50
+langchain-core>=0.3.0
+langchain-google-vertexai>=2.0.0   # default backend (Vertex AI / ADC)
+# langchain-google-genai>=2.0.0    # uncomment for LLM_BACKEND=genai (Developer API key)
+pydantic>=2.0
+rich>=13.0                          # optional: nicer tracing (falls back to plain logs)
+pytest>=7.0                         # optional: enables the spec layer / coding-team verifier
+google-cloud-aiplatform>=1.71.0     # optional: AGENTD_MEMORY=rag (Vertex AI RAG Engine / RagManagedDb)
