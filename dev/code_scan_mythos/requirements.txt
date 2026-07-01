@@ -1,0 +1,7 @@
+# Homemade Mythos harness — Gemini 3.0 backend.
+# Layer 1 (C1-C4) needs none of these; they are pure stdlib + sqlite.
+# The LLM-dependent layers (C5-C12) need google-genai.
+google-genai>=1.0.0
+pyyaml>=6.0
+tabulate>=0.9
+rich>=13.0
